@@ -17,6 +17,9 @@ curl -XGET "http://localhost:9200/conference/talk/1"
 # Search documents using a query string
 curl -XGET "http://localhost:9200/conference/talk/_search?q=Elasticsearch"
 
+# Search documents in a certain field
+curl -XGET "http://localhost:9200/conference/talk/_search?q=title:elasticsearch"
+
 # Search documents using the query DSL
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
 {
@@ -27,6 +30,16 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
     }
 }'
 
+# Search documents in a certain field using the query DSL
+curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
+{
+  "query": {
+    "query_string": {
+      "query": "title:Elasticsearch"
+    }
+  }
+}'
+
 # Match query
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
 {
@@ -35,7 +48,7 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
            "title": "Elasticsearch"
         }
     }
-}
+}'
 
 # Multi match query
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
@@ -46,7 +59,7 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
            "fields": ["title", "tags"]
         }    
     }
-}
+}'
 
 # Term query
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
@@ -58,7 +71,7 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
            }
         }
     }
-}
+}'
 
 # Filtered query
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
@@ -72,7 +85,7 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
            }
         }
     }
-}
+}'
 
 # get mapping
 curl -XGET "http://localhost:9200/conference/talk/_mapping"
@@ -88,7 +101,7 @@ curl -XPUT "http://localhost:9200/conference/talk/_mapping" -d'
 {
     "talk" : {
         "properties" : {
-            "tags" : {"type": "string", "analyzer": "keyword"}
+            "tags" : {"type": "string", "index": "not_analyzed"}
         }
     }
 }'
@@ -103,26 +116,26 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
            }
         }    
     }
-}
+}'
 
 # page size
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
 {
     "size": 5
-}
+}'
 
 # page size and start
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
 {
     "size": 5,
     "from": 5
-}
+}'
 
 # sort by field
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
 {
     "sort": "date"
-}
+}'
 
 # specify order
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
@@ -130,7 +143,7 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
     "sort": [
         { "date": {"order": "desc"}}
     ]
-}
+}'
 
 # sort by multiple fields
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
@@ -139,7 +152,7 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
         { "date": {"order": "desc"}},
         "title"
     ]
-}
+}'
 
 # build facet via terms aggregation
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
@@ -152,13 +165,13 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
             }
         }
     }
-}
+}'
 
 # source filtering
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
 {
     "_source": ["title", "conference.*"]
-}
+}'
 
 # search with search template
 curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
@@ -173,7 +186,7 @@ curl -XPOST "http://localhost:9200/conference/talk/_search" -d'
             }
         }
     }
-}
+}'
 
 # register search template
 curl -XPUT "http://localhost:9200/_search/template/by-title" -d'
@@ -188,7 +201,7 @@ curl -XPUT "http://localhost:9200/_search/template/by-title" -d'
 }'
 
 # use registered search template
-curl -XGET "http://localhost:9200/conference/_search/template" -d'
+curl -XPOST "http://localhost:9200/conference/_search/template" -d'
 {
     "template": {
         "id": "by-title" 
