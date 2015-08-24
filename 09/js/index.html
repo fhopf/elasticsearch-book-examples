@@ -1,0 +1,37 @@
+<html>
+<head>
+<script src="bower_components/elasticsearch/elasticsearch.js"></script>
+<script>
+  var client = elasticsearch.Client({
+    host: 'http://localhost:9200'
+  });
+</script>
+
+
+</head>
+<body>
+<script>
+client.search({
+  index: 'conference',
+  type: 'talk',
+  body: {
+    query: {
+      match: {
+        title: 'search-driven'
+      }
+    }
+  }
+}).then(function (resp) {
+    var hits = resp.hits.hits;
+    var content = document.getElementById("body-content");
+    var newElement = document.createElement("span");
+    newElement.innerHTML = hits;
+    content.parentNode.replaceChild(newElement, content);
+}, function (err) {
+    console.trace(err.message);
+});
+</script>
+
+<div id="body-content"/>
+
+</body>
